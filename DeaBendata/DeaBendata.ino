@@ -1,7 +1,7 @@
 #include <VGA.h>
 #include "Numbers.h"
 
-int NUMERI = 600;
+int NUMERI = 139;
 
 int width = 40;
 int height = 25;
@@ -34,6 +34,9 @@ int estrai() {
 }
 
 void setup() {
+  pinMode(12, INPUT);
+  digitalWrite(12, HIGH);
+  
   Serial.begin(9600);
   VGA.begin(320, 240, VGA_COLOUR);
   mainScreen();
@@ -47,7 +50,8 @@ void printCentered(String title, int row) {
 int waitChar() {
   int c;
   while (Serial.available() == 0)
-    ;
+    if (digitalRead(12)==LOW)
+      return -1;
   return Serial.read();
 }
 
@@ -59,7 +63,7 @@ int waitChar() {
 
 void mainScreen() {
   VGA.clear();
-  printCentered("La Riffa!", 4);
+  printCentered("La Dea Bendata.", 4);
   printCentered("I'm going to choose a", 7);
   printCentered("random number between", 9);
   printNumber(140, 88, 4, 7, 1);
@@ -73,6 +77,12 @@ void readyScreen() {
 }
 
 void loop() {
+  if (digitalRead(12) == LOW) {
+    readyScreen();
+    delay(4000);
+    lottery();
+  }
+  
   int c = waitChar();
   if (c == '0')
     mainScreen();
